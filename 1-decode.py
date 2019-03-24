@@ -191,12 +191,13 @@ def listen_linux(frame_rate=44100, interval=0.1):
         dom = dominant(frame_rate, chunk)
         if(not match(dom,1540)):
            end_stack=0
-        elif(match(dom,1540)):  
+        else:
+                while(match(dom,1540)):  
                    end_stack+=1
                         
         if(in_packet):        
                 dom+=end_stack
-        print(dom)
+        print(end_stack)
 
         #print(HANDSHAKE_START_HZ)
         #print(dom)
