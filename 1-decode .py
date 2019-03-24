@@ -191,12 +191,11 @@ def listen_linux(frame_rate=44100, interval=0.1):
         chunk = np.fromstring(data, dtype=np.int16)
         dom = dominant(frame_rate, chunk)
                         
-        if(in_packet and(dom<999)and(int(last_dom/1500)==1)): 
+        if(in_packet and(dom<999)and(int(last_dom/1500)==1)and(len(packet)!=0)): 
             end_ = True
-              
-            dom= packet.pop() 
+            dom= packet[len(packet)-1] 
             #packet.append(dom)              
-        print(dom)
+        #print(dom)
 
         #print(HANDSHAKE_START_HZ)
         #print(dom)
@@ -206,6 +205,7 @@ def listen_linux(frame_rate=44100, interval=0.1):
             byte_stream = extract_packet(packet)
             #print(byte_stream)
             print("original code",byte_stream)
+            end_ =False
 
             try:
                 byte_stream = RSCodec(FEC_BYTES).decode(byte_stream)
