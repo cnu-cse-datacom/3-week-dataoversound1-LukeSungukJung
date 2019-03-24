@@ -14,7 +14,7 @@ from termcolor import cprint
 from pyfiglet import figlet_format
 
 HANDSHAKE_START_HZ = 1024
-HANDSHAKE_END_HZ = 1000+ 520
+HANDSHAKE_END_HZ = 1000+ 540
 
 START_HZ = 1024
 STEP_HZ = 256
@@ -68,7 +68,7 @@ def dominant(frame_rate, chunk):
 
 def match(freq1, freq2):
     #print(freq1)
-    return abs(freq1 - freq2) < 20
+    return abs(freq1 - freq2) < 21
 
 def decode_bitchunks(chunk_bits, chunks):
     out_bytes = []
@@ -162,8 +162,6 @@ end_check_list = []
 
 
 def listen_linux(frame_rate=44100, interval=0.1):
-    HANDSHAKE_START_HZ = 1024
-    HANDSHAKE_END_HZ = 1000+ 563
 
     mic = alsaaudio.PCM(alsaaudio.PCM_CAPTURE, alsaaudio.PCM_NORMAL)
     mic.setchannels(1)
@@ -178,8 +176,11 @@ def listen_linux(frame_rate=44100, interval=0.1):
 
     in_packet = False
     packet = []
-    coeff =0
+    coeff =0    
+    
+    last_dom = 0
     while True:
+        end_ =False
         l, data = mic.read()
         #nyquist 2*bandwidth*log2(L)
                 
@@ -189,20 +190,19 @@ def listen_linux(frame_rate=44100, interval=0.1):
 
         chunk = np.fromstring(data, dtype=np.int16)
         dom = dominant(frame_rate, chunk)
-        if(not match(dom,1540)):
-           end_stack=0
-        elif(match(dom,1540)):  
-                   end_stack+=1
                         
-        if(in_packet):        
-                dom+=end_stack
+        if(in_packet and(dom<999)and(int(last_dom/1500)==1)): 
+            end_ = True
+              
+            dom= packet.pop() 
+            #packet.append(dom)              
         print(dom)
 
         #print(HANDSHAKE_START_HZ)
         #print(dom)
 
-        if in_packet and match(dom, HANDSHAKE_END_HZ):
-            #print(packet)
+        if in_packet and match(dom, HANDSHAKE_END_HZ) and end_:
+            #print(dom)
             byte_stream = extract_packet(packet)
             #print(byte_stream)
             print("original code",byte_stream)
@@ -219,6 +219,7 @@ def listen_linux(frame_rate=44100, interval=0.1):
             in_packet = False
         elif in_packet:
             packet.append(dom)
+            last_dom =dom
         elif match(dom,HANDSHAKE_START_HZ):
             in_packet = True
 
