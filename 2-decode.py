@@ -147,7 +147,7 @@ def set_start_end(dom,start,end):
     for bias in range(4):
         #start point
         if(match(dom*(i**bias),res_start)):
-            print(dom)
+            #print(dom)
             res_start = res_start/(i**bias)
             res_end = res_start+512
             break
@@ -216,7 +216,7 @@ def listen_linux(frame_rate=44100, interval=0.1):
             in_packet = True
 
         if (not in_packet):
-            # print('sibal')
+
             HANDSHAKE_START_HZ, HANDSHAKE_END_HZ = set_start_end(dom, HANDSHAKE_START_HZ, HANDSHAKE_END_HZ)
 
 
