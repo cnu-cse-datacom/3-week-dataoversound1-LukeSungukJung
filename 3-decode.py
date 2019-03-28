@@ -13,8 +13,8 @@ from reedsolo import RSCodec, ReedSolomonError
 from termcolor import cprint
 from pyfiglet import figlet_format
 
-HANDSHAKE_START_HZ = 1020
-HANDSHAKE_END_HZ = 4600
+HANDSHAKE_START_HZ = 4100
+HANDSHAKE_END_HZ = 5620
 
 START_HZ = 1024
 STEP_HZ = 256
@@ -67,7 +67,7 @@ def dominant(frame_rate, chunk):
     return abs(peak_freq * frame_rate) # in Hz
 
 def match(freq1, freq2):
-    #print(freq1)
+    print(freq1)
     return abs(freq1 - freq2) < 21
 
 def decode_bitchunks(chunk_bits, chunks):
@@ -191,7 +191,7 @@ def listen_linux(frame_rate=44100, interval=0.1):
         chunk = np.fromstring(data, dtype=np.int16)
         dom = dominant(frame_rate, chunk)
                         
-        if(in_packet and(dom<999)and(int(last_dom/4600)==1)and(len(packet)!=0)): 
+        if(in_packet and(dom<999)and(int(last_dom/5600)==1)and(len(packet)!=0)): 
             end_ = True
               
             dom= packet.pop() 
